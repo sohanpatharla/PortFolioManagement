@@ -41,6 +41,8 @@ async function loadWatchlist() {
     try {
         const watchlist = await api.get('/api/portfolio/watchlist');
         watchlistData = watchlist;
+        console.log('Watchlist data loaded:', watchlistData);
+        
         renderWatchlist(watchlist);
         
     } catch (error) {

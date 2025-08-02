@@ -41,6 +41,12 @@ async function loadHoldings() {
             api.get('/api/portfolio/holdings'),
             api.get('/api/portfolio/summary')
         ]);
+        //     holdings.forEach(holding => {
+        //     holding.totalValue = holding.currentPrice * holding.quantity;
+        //     holding.profitLoss = (holding.currentPrice - holding.buyPrice) * holding.quantity;
+        //     holding.profitLossPercentage = ((holding.currentPrice - holding.buyPrice) / holding.buyPrice) * 100;
+        // });
+        console.log(holdings);
         
         holdingsData = holdings;
         updateSummaryCards(summary);
@@ -74,6 +80,8 @@ function updateSummaryCards(summary) {
 // Render holdings table
 function renderHoldingsTable(holdings) {
     const tbody = document.getElementById('holdingsTableBody');
+    console.log(holdings);
+    
     if (!tbody) return;
 
     if (holdings.length === 0) {

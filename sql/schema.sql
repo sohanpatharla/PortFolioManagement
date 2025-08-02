@@ -105,8 +105,8 @@ CREATE TABLE sessions (
 
 -- Insert some sample data (optional)
 INSERT INTO users (email, password, first_name, last_name, phone, date_of_birth, address) VALUES
-('john.doe@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMye.7qsm8QWG/xfP4UWW3hhAOeEqpT/F2u', 'John', 'Doe', '+1-555-0123', '1990-05-15', '123 Investment Street, Finance City, FC 12345'),
-('jane.smith@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMye.7qsm8QWG/xfP4UWW3hhAOeEqpT/F2u', 'Jane', 'Smith', '+1-555-0456', '1985-09-22', '456 Portfolio Avenue, Wealth City, WC 67890');
+('john.doe@example.com', '$2y$10$oji3jh.bWWu02zmONNrW/ubwdTEzvNilkrPtJg6.o4YieRztjjnfO', 'John', 'Doe', '+1-555-0123', '1990-05-15', '123 Investment Street, Finance City, FC 12345'),
+('jane.smith@example.com', '$2y$10$oji3jh.bWWu02zmONNrW/ubwdTEzvNilkrPtJg6.o4YieRztjjnfO', 'Jane', 'Smith', '+1-555-0456', '1985-09-22', '456 Portfolio Avenue, Wealth City, WC 67890');
 
 -- Insert user settings
 INSERT INTO user_settings (user_id, dark_mode, notifications, currency, language) VALUES

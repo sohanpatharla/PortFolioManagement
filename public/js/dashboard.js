@@ -400,6 +400,8 @@ function updatePerformanceChart(period) {
 async function loadRecentActivity() {
     try {
         const transactions = await api.get('/api/portfolio/transactions');
+        console.log("Recent transactions:", transactions);
+        
         const recentTransactions = transactions.slice(0, 5); // Get last 5 transactions
         
         const activityList = document.getElementById('recentActivity');

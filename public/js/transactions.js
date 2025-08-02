@@ -50,6 +50,8 @@ async function loadTransactions() {
 
 // Update summary cards
 function updateSummaryCards(transactions) {
+    
+    
     let totalBuys = 0;
     let totalSells = 0;
     let totalVolume = 0;
@@ -61,10 +63,13 @@ function updateSummaryCards(transactions) {
         } else if (transaction.type === 'SELL') {
             totalSells++;
         }
+       
         
-        totalVolume += transaction.total;
+        totalVolume +=  parseFloat(transaction.total) || 0;
         totalFees += transaction.fees || 0;
     });
+    
+    
 
     document.getElementById('totalBuys').textContent = totalBuys;
     document.getElementById('totalSells').textContent = totalSells;

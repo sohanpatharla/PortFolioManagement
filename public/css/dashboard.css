@@ -1,0 +1,513 @@
+/* Dashboard Specific Styles */
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .dashboard-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  
+  .dashboard-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-top: 0.25rem;
+  }
+  
+  .dashboard-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  .quick-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .stat-card {
+    background: var(--card-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--primary-color);
+  }
+  
+  .stat-card.profit::before {
+    background: var(--success-color);
+  }
+  
+  .stat-card.loss::before {
+    background: var(--danger-color);
+  }
+  
+  .stat-card.neutral::before {
+    background: var(--warning-color);
+  }
+  
+  .stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+  
+  .stat-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: white;
+    background: var(--primary-color);
+  }
+  
+  .stat-icon.profit {
+    background: var(--success-color);
+  }
+  
+  .stat-icon.loss {
+    background: var(--danger-color);
+  }
+  
+  .stat-icon.neutral {
+    background: var(--warning-color);
+  }
+  
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+  
+  .stat-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .stat-change {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+  }
+  
+  .stat-change.positive {
+    color: var(--success-color);
+  }
+  
+  .stat-change.negative {
+    color: var(--danger-color);
+  }
+  
+  .stat-change.neutral {
+    color: var(--text-secondary);
+  }
+  
+  .dashboard-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .charts-section {
+    display: grid;
+    gap: 1.5rem;
+  }
+  
+  .chart-card {
+    background: var(--card-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .chart-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  
+  .chart-period {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .period-btn {
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--border-color);
+    background: var(--background-color);
+    color: var(--text-secondary);
+    border-radius: var(--border-radius);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .period-btn:hover,
+  .period-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }
+  
+  .chart-container {
+    position: relative;
+    height: 300px;
+    margin: 1rem 0;
+  }
+  
+  .portfolio-pie-chart {
+    height: 400px;
+  }
+  
+  .sidebar-section {
+    display: grid;
+    gap: 1.5rem;
+  }
+  
+  .recent-activity {
+    background: var(--card-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .activity-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .activity-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  
+  .activity-list {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .activity-item {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: var(--transition);
+  }
+  
+  .activity-item:hover {
+    background-color: var(--surface-color);
+  }
+  
+  .activity-item:last-child {
+    border-bottom: none;
+  }
+  
+  .activity-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    color: white;
+    flex-shrink: 0;
+  }
+  
+  .activity-icon.buy {
+    background: var(--success-color);
+  }
+  
+  .activity-icon.sell {
+    background: var(--danger-color);
+  }
+  
+  .activity-icon.add {
+    background: var(--primary-color);
+  }
+  
+  .activity-details {
+    flex: 1;
+  }
+  
+  .activity-main {
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+  
+  .activity-sub {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+  
+  .activity-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  
+  .top-performers {
+    background: var(--card-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .performers-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .performers-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  
+  .performer-item {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition);
+  }
+  
+  .performer-item:hover {
+    background-color: var(--surface-color);
+  }
+  
+  .performer-item:last-child {
+    border-bottom: none;
+  }
+  
+  .performer-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .performer-symbol {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+  
+  .performer-name {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+  
+  .performer-change {
+    text-align: right;
+  }
+  
+  .performer-price {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+  
+  .performer-percent {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .performer-percent.positive {
+    color: var(--success-color);
+  }
+  
+  .performer-percent.negative {
+    color: var(--danger-color);
+  }
+  
+  .market-summary {
+    background: var(--card-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .market-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+  
+  .market-indices {
+    display: grid;
+    gap: 1rem;
+  }
+  
+  .market-index {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    background-color: var(--surface-color);
+  }
+  
+  .index-name {
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  
+  .index-value {
+    text-align: right;
+  }
+  
+  .index-price {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+  
+  .index-change {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .index-change.positive {
+    color: var(--success-color);
+  }
+  
+  .index-change.negative {
+    color: var(--danger-color);
+  }
+  
+  /* Mobile Responsiveness */
+  @media (max-width: 1024px) {
+    .dashboard-content {
+      grid-template-columns: 1fr;
+    }
+    
+    .quick-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .dashboard-actions {
+      width: 100%;
+      justify-content: flex-start;
+    }
+    
+    .quick-stats {
+      grid-template-columns: 1fr;
+    }
+    
+    .chart-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .chart-period {
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .chart-container {
+      height: 250px;
+    }
+    
+    .portfolio-pie-chart {
+      height: 300px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .dashboard-title {
+      font-size: 1.5rem;
+    }
+    
+    .stat-card {
+      padding: 1rem;
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+    }
+    
+    .chart-card {
+      padding: 1rem;
+    }
+    
+    .activity-item,
+    .performer-item {
+      padding: 0.75rem 1rem;
+    }
+    
+    .activity-header,
+    .performers-header {
+      padding: 1rem;
+    }
+  }

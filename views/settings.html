@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Portfolio Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <div class="navbar-content">
+                <a href="/dashboard" class="navbar-brand">📊 Portfolio</a>
+                <ul class="navbar-nav">
+                    <li><span id="userGreeting" class="nav-link">Welcome!</span></li>
+                    <li><button id="themeToggle" class="btn btn-secondary btn-sm">🌙</button></li>
+                    <li><button id="logoutBtn" class="btn btn-outline btn-sm">Logout</button></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul class="sidebar-nav">
+            <li><a href="/dashboard">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                Dashboard
+            </a></li>
+            <li><a href="/holdings">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                Holdings
+            </a></li>
+            <li><a href="/transactions">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/></svg>
+                Transactions
+            </a></li>
+            <li><a href="/watchlist">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/></svg>
+                Watchlist
+            </a></li>
+            <li><a href="/profile">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/></svg>
+                Profile
+            </a></li>
+            <li><a href="/settings" class="active">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/></svg>
+                Settings
+            </a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="dashboard-header">
+            <div>
+                <h1 class="dashboard-title">Settings</h1>
+                <p class="dashboard-subtitle">Customize your app preferences</p>
+            </div>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <div class="grid grid-cols-1 gap-6">
+            <!-- App Preferences -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">App Preferences</h3>
+                </div>
+                <div class="card-body">
+                    <form id="settingsForm">
+                        <div class="grid grid-cols-1 gap-6">
+                            <!-- Theme Settings -->
+                            <div class="setting-item">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <h4 class="font-semibold">Dark Mode</h4>
+                                        <p class="text-secondary text-sm">Switch between light and dark themes</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="darkMode" name="darkMode">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Notifications -->
+                            <div class="setting-item border-t pt-6">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <h4 class="font-semibold">Notifications</h4>
+                                        <p class="text-secondary text-sm">Receive notifications about portfolio updates</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="notifications" name="notifications">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Currency -->
+                            <div class="setting-item border-t pt-6">
+                                <div>
+                                    <h4 class="font-semibold mb-2">Default Currency</h4>
+                                    <p class="text-secondary text-sm mb-3">Choose your preferred currency for display</p>
+                                    <select id="currency" name="currency" class="form-control" style="max-width: 200px;">
+                                        <option value="USD">USD - US Dollar</option>
+                                        <option value="EUR">EUR - Euro</option>
+                                        <option value="GBP">GBP - British Pound</option>
+                                        <option value="JPY">JPY - Japanese Yen</option>
+                                        <option value="CAD">CAD - Canadian Dollar</option>
+                                        <option value="AUD">AUD - Australian Dollar</option>
+                                        <option value="CHF">CHF - Swiss Franc</option>
+                                        <option value="CNY">CNY - Chinese Yuan</option>
+                                        <option value="INR">INR - Indian Rupee</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Language -->
+                            <div class="setting-item border-t pt-6">
+                                <div>
+                                    <h4 class="font-semibold mb-2">Language</h4>
+                                    <p class="text-secondary text-sm mb-3">Choose your preferred language</p>
+                                    <select id="language" name="language" class="form-control" style="max-width: 200px;">
+                                        <option value="en">English</option>
+                                        <option value="es">Español</option>
+                                        <option value="fr">Français</option>
+                                        <option value="de">Deutsch</option>
+                                        <option value="it">Italiano</option>
+                                        <option value="pt">Português</option>
+                                        <option value="zh">中文</option>
+                                        <option value="ja">日本語</option>
+                                        <option value="ko">한국어</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end space-x-4 mt-6 pt-6 border-t">
+                            <button type="button" class="btn btn-secondary" id="resetSettings">Reset to Default</button>
+                            <button type="submit" class="btn btn-primary">Save Settings</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Data Management</h3>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-cols-1 gap-6">
+                        <!-- Export Data -->
+                        <div class="setting-item">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-semibold">Export Portfolio Data</h4>
+                                    <p class="text-secondary text-sm">Download your portfolio data as CSV file</p>
+                                </div>
+                                <button class="btn btn-outline" id="exportData">
+                                    📊 Export CSV
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Data Sync -->
+                        <div class="setting-item border-t pt-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-semibold">Data Synchronization</h4>
+                                    <p class="text-secondary text-sm">Last synced: Just now</p>
+                                </div>
+                                <button class="btn btn-outline" disabled>
+                                    🔄 Auto-sync Enabled
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Backup -->
+                        <div class="setting-item border-t pt-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-semibold">Data Backup</h4>
+                                    <p class="text-secondary text-sm">Your data is automatically backed up daily</p>
+                                </div>
+                                <span class="text-success font-semibold">✅ Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Management -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Account Management</h3>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-cols-1 gap-6">
+                        <!-- Privacy Settings -->
+                        <div class="setting-item">
+                            <div>
+                                <h4 class="font-semibold mb-2">Privacy Settings</h4>
+                                <p class="text-secondary text-sm mb-4">Manage your privacy and data sharing preferences</p>
+                                <div class="space-y-3">
+                                    <label class="flex items-center gap-3">
+                                        <input type="checkbox" class="form-checkbox" checked>
+                                        <span class="text-sm">Allow anonymous analytics to improve the service</span>
+                                    </label>
+                                    <label class="flex items-center gap-3">
+                                        <input type="checkbox" class="form-checkbox">
+                                        <span class="text-sm">Share aggregated portfolio data for market insights</span>
+                                    </label>
+                                    <label class="flex items-center gap-3">
+                                        <input type="checkbox" class="form-checkbox" checked>
+                                        <span class="text-sm">Receive marketing emails about new features</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Danger Zone -->
+                        <div class="setting-item border-t pt-6">
+                            <div class="bg-danger bg-opacity-10 p-4 rounded border border-danger border-opacity-30">
+                                <h4 class="font-semibold text-danger mb-2">⚠️ Danger Zone</h4>
+                                <p class="text-secondary text-sm mb-4">
+                                    These actions are irreversible. Please proceed with caution.
+                                </p>
+                                <div class="space-y-3">
+                                    <button class="btn btn-outline btn-sm text-warning border-warning" onclick="clearAllData()">
+                                        🗑️ Clear All Portfolio Data
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" id="deleteAccount">
+                                        ❌ Delete Account Permanently
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- App Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">App Information</h3>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold mb-2">Version</h4>
+                            <p class="text-secondary">1.0.0</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2">Last Updated</h4>
+                            <p class="text-secondary">January 2024</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2">Support</h4>
+                            <a href="mailto:support@portfolio.com" class="text-primary">support@portfolio.com</a>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2">Documentation</h4>
+                            <a href="#" class="text-primary">View Help Center</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/settings.js"></script>
+    <script>
+        // Clear all portfolio data
+        function clearAllData() {
+            const confirmed = confirm(
+                'Are you sure you want to clear all your portfolio data? This will remove:\n\n' +
+                '• All holdings\n' +
+                '• Transaction history\n' +
+                '• Watchlist items\n\n' +
+                'This action cannot be undone!'
+            );
+            
+            if (confirmed) {
+                ui.showAlert('Portfolio data clearing feature will be available soon', 'info');
+            }
+        }
+    </script>
+
+    <style>
+        /* Toggle Switch Styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: var(--transition);
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .setting-item {
+            padding: 1rem 0;
+        }
+
+        .form-checkbox {
+            width: 1.125rem;
+            height: 1.125rem;
+            accent-color: var(--primary-color);
+        }
+
+        .bg-opacity-10 {
+            background-color: rgba(220, 38, 38, 0.1) !important;
+        }
+
+        .border-opacity-30 {
+            border-color: rgba(220, 38, 38, 0.3) !important;
+        }
+    </style>
+</body>
+</html>

@@ -2,6 +2,7 @@ const express = require('express');
 const { requireAuth } = require('../middleware/auth');
 const router = express.Router();
 const db = require('../config/database');
+const { getStockPrice } = require('../utils/finnhub');
 
 // Static dummy data for portfolio (replace with database later)
 const dummyHoldings = [
@@ -221,31 +222,87 @@ router.get('/summary', async (req, res) => {
 });
 
 
-// Get all holdings
-router.get('/holdings', async (req, res) => {
-  // try {
-  //   const userHoldings = dummyHoldings.filter(holding => holding.userId === req.session.userId);
-  //   console.log(userHoldings);
+// // Get all holdings
+// router.get('/holdings', async (req, res) => {
+//   // try {
+//   //   const userHoldings = dummyHoldings.filter(holding => holding.userId === req.session.userId);
+//   //   console.log(userHoldings);
     
-  //   res.json(userHoldings);
-  // } catch (error) {
-  //   res.status(500).json({ error: 'Failed to fetch holdings' });
-  // }
-  const userId = req.session.userId; // assuming session is set
-    if (!userId) return res.status(401).json({ error: 'Not authenticated' });
+//   //   res.json(userHoldings);
+//   // } catch (error) {
+//   //   res.status(500).json({ error: 'Failed to fetch holdings' });
+//   // }
+//   const userId = req.session.userId; // assuming session is set
+//     if (!userId) return res.status(401).json({ error: 'Not authenticated' });
 
-    try {
-        const [rows] = await db.query(
-            'SELECT id,user_id as userId,symbol, company_name as companyName, quantity, buy_price as buyPrice, current_price as currentPrice,purchase_date as purchaseDate,total_value as totalValue,profit_loss as profitLoss,profit_loss_percentage as profitLossPercentage FROM holdings WHERE user_id = ?',
-            [userId]
-        );
-        //console.log(rows);
+//     try {
+//         const [rows] = await db.query(
+//             'SELECT id,user_id as userId,symbol, company_name as companyName, quantity, buy_price as buyPrice, current_price as currentPrice,purchase_date as purchaseDate,total_value as totalValue,profit_loss as profitLoss,profit_loss_percentage as profitLossPercentage FROM holdings WHERE user_id = ?',
+//             [userId]
+//         );
+//         //console.log(rows);
         
-        res.json(rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Database error' });
-    }
+//         res.json(rows);
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ error: 'Database error' });
+//     }
+// });
+router.get('/holdings', async (req, res) => {
+  const userId = req.session.userId;
+  if (!userId) return res.status(401).json({ error: 'Not authenticated' });
+
+  try {
+    // Fetch holdings from database
+    const [rows] = await db.query(
+      'SELECT id, user_id as userId, symbol, company_name as companyName, quantity, buy_price as buyPrice, current_price as currentPrice, purchase_date as purchaseDate, total_value as totalValue, profit_loss as profitLoss, profit_loss_percentage as profitLossPercentage FROM holdings WHERE user_id = ?',
+      [userId]
+    );
+
+    // Update current prices and recalculate values
+    const updatedHoldings = await Promise.all(
+      rows.map(async (holding) => {
+        try {
+          // Fetch current price from API
+          const currentPrice = await getStockPrice(holding.symbol);
+          
+          if (currentPrice !== null) {
+            // Calculate updated values
+            const totalValue = holding.quantity * currentPrice;
+            const profitLoss = totalValue - (holding.quantity * holding.buyPrice);
+            const profitLossPercentage = ((currentPrice - holding.buyPrice) / holding.buyPrice) * 100;
+
+            // Update database with new values
+            await db.query(
+              'UPDATE holdings SET current_price = ?, total_value = ?, profit_loss = ?, profit_loss_percentage = ? WHERE id = ?',
+              [currentPrice, totalValue, profitLoss, profitLossPercentage, holding.id]
+            );
+
+            // Return updated holding
+            return {
+              ...holding,
+              currentPrice: currentPrice,
+              totalValue: totalValue,
+              profitLoss: profitLoss,
+              profitLossPercentage: profitLossPercentage
+            };
+          } else {
+            // If API call failed, return holding with existing data
+            console.warn(`Failed to fetch current price for ${holding.symbol}, using stored price`);
+            return holding;
+          }
+        } catch (error) {
+          console.error(`Error processing holding ${holding.symbol}:`, error.message);
+          return holding; // Return original holding if processing fails
+        }
+      })
+    );
+
+    res.json(updatedHoldings);
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
 });
 router.post('/holdings', async (req, res) => {
   try {
@@ -262,7 +319,11 @@ router.post('/holdings', async (req, res) => {
       return res.status(400).json({ error: 'Quantity and Buy Price must be valid numbers' });
     }
 
-    const currentPrice = parsedBuyPrice * (0.9 + Math.random() * 0.2);
+    //const currentPrice = parsedBuyPrice * (0.9 + Math.random() * 0.2);
+    const currentPrice = await getStockPrice(symbol.toUpperCase());
+    if (currentPrice === null) {
+      return res.status(500).json({ error: 'Failed to fetch current stock price' });
+    }
     const totalInvestment = parsedQuantity * parsedBuyPrice;
     const totalValue = parsedQuantity * currentPrice;
     const profitLoss = totalValue - totalInvestment;

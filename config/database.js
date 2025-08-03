@@ -1,18 +1,33 @@
+const fs = require('fs');
+const path = require('path');  
 const mysql = require('mysql2');
 require('dotenv').config();
 
-// Create connection pool for better performance
+console.log(process.env.DB_HOST, process.env.DB_USER, process.env.DB_PASSWORD, process.env.DB_NAME);
+
+
+
+const caPath = path.join(__dirname, 'ca.pem');
+console.log(caPath);
+
+
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'portfolio_db',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT || 3306,
+  ssl: {
+    rejectUnauthorized: true,
+    ca: fs.readFileSync(path.join(__dirname, 'ca.pem'))
+  },
+  connectTimeout: 60000,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0,
-  acquireTimeout: 60000,
-  timeout: 60000
+  queueLimit: 0
 });
+
+
 
 // Get promise-based connection
 const promisePool = pool.promise();

@@ -17,6 +17,57 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Initialize event listeners
     initializeEventListeners();
+    // Wallet Modal Button
+document.getElementById('openWallet')?.addEventListener('click', async () => {
+    try {
+        const res = await api.get('/api/wallet');
+        document.getElementById('walletBalance').textContent = utils.formatCurrency(res.balance);
+        ui.showModal('walletModal');
+    } catch (err) {
+        ui.showAlert('Failed to fetch wallet balance', 'error');
+    }
+});
+
+// Wallet Deposit Form
+document.getElementById('depositForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const amount = parseFloat(document.getElementById('depositAmount').value);
+    try {
+        await api.post('/api/wallet/deposit', { amount });
+        ui.showAlert('Deposited successfully!', 'success');
+        ui.hideModal('walletModal');
+    } catch (err) {
+        ui.showAlert('Deposit failed', 'error');
+    }
+});
+
+window.openTradeModal = function(type, symbol, company, price) {
+    document.getElementById('tradeType').value = type;
+    document.getElementById('tradeSymbol').value = symbol;
+    document.getElementById('tradeCompany').textContent = company;
+    document.getElementById('tradePrice').textContent = `$${price.toFixed(2)}`;
+    document.getElementById('tradeQuantity').value = '';
+    ui.showModal('tradeModal');
+};
+
+
+// Trade Form Submission
+document.getElementById('tradeForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const type = document.getElementById('tradeType').value;
+    const symbol = document.getElementById('tradeSymbol').value;
+    const quantity = parseFloat(document.getElementById('tradeQuantity').value);
+
+    try {
+        await api.post('/api/portfolio/trade', { type, symbol, quantity });
+        ui.showAlert(`${type} successful`, 'success');
+        ui.hideModal('tradeModal');
+        await loadHoldings();
+    } catch (err) {
+        ui.showAlert(err.message || `${type} failed`, 'error');
+    }
+});
+
 });
 
 // Load user information
@@ -120,12 +171,8 @@ function renderHoldingsTable(holdings) {
                 </td>
                 <td>
                     <div class="flex space-x-2">
-                        <button class="btn btn-sm btn-outline" onclick="editHolding(${holding.id})" title="Edit">
-                            ✏️
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteHolding(${holding.id})" title="Delete">
-                            🗑️
-                        </button>
+                       <button class="btn btn-sm btn-success" onclick="openTradeModal('BUY', '${holding.symbol}', '${holding.companyName}', ${holding.currentPrice})">Buy</button>
+        <button class="btn btn-sm btn-danger" onclick="openTradeModal('SELL', '${holding.symbol}', '${holding.companyName}', ${holding.currentPrice})">Sell</button>
                     </div>
                 </td>
             </tr>
@@ -145,7 +192,7 @@ function initializeEventListeners() {
             ui.showAlert('Holdings refreshed successfully', 'success');
         });
     }
-
+    
     // Export holdings
     const exportBtn = document.getElementById('exportHoldings');
     if (exportBtn) {

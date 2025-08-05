@@ -62,6 +62,7 @@
             </div>
             <div class="dashboard-actions">
                 <button class="btn btn-outline btn-sm" id="refreshHoldings">🔄 Refresh</button>
+                <button class="btn btn-outline btn-sm" id="openWallet">💼 Wallet</button>
                 <button class="btn btn-secondary btn-sm" id="exportHoldings">📊 Export</button>
                 <button class="btn btn-primary" id="addHolding">+ Add Stock</button>
             </div>
@@ -203,5 +204,53 @@
 
     <script src="/js/main.js"></script>
     <script src="/js/holdings.js"></script>
+    <!-- Wallet Modal -->
+<div id="walletModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Wallet</h3>
+        <button class="modal-close" onclick="ui.hideModal('walletModal')">✕</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Current Balance:</label>
+        <div class="stat-value" id="walletBalance">$0.00</div>
+      </div>
+      <form id="depositForm">
+        <div class="form-group">
+          <label for="depositAmount" class="form-label">Deposit Amount</label>
+          <input type="number" id="depositAmount" name="amount" class="form-control" min="1" step="0.01" required />
+        </div>
+        <button type="submit" class="btn btn-primary w-full">Deposit</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Trade Modal -->
+  <div id="tradeModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="tradeModalTitle">Trade Stock</h3>
+        <button class="modal-close" onclick="ui.hideModal('tradeModal')">✕</button>
+      </div>
+      <form id="tradeForm">
+        <input type="hidden" name="type" id="tradeType" />
+        <input type="hidden" name="symbol" id="tradeSymbol" />
+        <div class="form-group">
+          <label class="form-label">Company</label>
+          <div id="tradeCompany" class="text-primary font-bold mb-2"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Current Price</label>
+          <div id="tradePrice" class="text-primary font-bold mb-2"></div>
+        </div>
+        <div class="form-group">
+          <label for="tradeQuantity" class="form-label">Quantity</label>
+          <input type="number" id="tradeQuantity" name="quantity" class="form-control" min="0.0001" step="0.0001" required />
+        </div>
+        <button type="submit" class="btn btn-primary w-full">Confirm</button>
+      </form>
+    </div>
+  </div>
+  
 </body>
 </html>

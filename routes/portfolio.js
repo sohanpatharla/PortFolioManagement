@@ -264,7 +264,8 @@ router.get('/holdings', async (req, res) => {
       rows.map(async (holding) => {
         try {
           // Fetch current price from API
-          const currentPrice = await getStockPrice(holding.symbol);
+          const stockData = await getStockPrice(holding.symbol);
+          const currentPrice = stockData.currentPrice;
           
           if (currentPrice !== null) {
             // Calculate updated values
@@ -320,7 +321,9 @@ router.post('/holdings', async (req, res) => {
     }
 
     //const currentPrice = parsedBuyPrice * (0.9 + Math.random() * 0.2);
-    const currentPrice = await getStockPrice(symbol.toUpperCase());
+    // const currentPrice = await getStockPrice(symbol.toUpperCase());
+     const stockData = await getStockPrice(symbol/toUpperCase());
+          const currentPrice = stockData.currentPrice;
     if (currentPrice === null) {
       return res.status(500).json({ error: 'Failed to fetch current stock price' });
     }
@@ -604,14 +607,40 @@ router.get('/transactions', async (req, res) => {
 router.get('/watchlist', async (req, res) => {
   try {
     const [rows] = await db.execute(
-      `SELECT id, symbol, company_name AS companyName, current_price AS currentPrice, 
-              change_percent AS changePercent, added_date AS addedDate
+      `SELECT id, symbol, company_name AS companyName ,added_date AS addedDate
        FROM watchlist
        WHERE user_id = ?`,
       [req.session.userId]
     );
 
-    res.json(rows);
+    // Update each row with real-time data
+    const updatedRows = await Promise.all(rows.map(async (row) => {
+      const data = await getStockPrice(row.symbol);
+      if (data && data.currentPrice !== null) {
+        // Update the DB with new price and percent
+        await db.execute(
+          `UPDATE watchlist 
+           SET current_price = ?, change_percent = ? 
+           WHERE id = ?`,
+          [data.currentPrice, data.changePercent, row.id]
+        );
+
+        return {
+          ...row,
+          currentPrice: parseFloat(data.currentPrice.toFixed(2)),
+          changePercent: parseFloat((data.changePercent || 0).toFixed(2)),
+        };
+      } else {
+        // Return row with old/default values if fetch failed
+        return {
+          ...row,
+          currentPrice: null,
+          changePercent: null,
+        };
+      }
+    }));
+
+    res.json(updatedRows);
   } catch (error) {
     console.error("Error fetching watchlist:", error);
     res.status(500).json({ error: 'Failed to fetch watchlist' });
@@ -667,6 +696,63 @@ router.post('/watchlist', async (req, res) => {
     res.status(500).json({ error: 'Failed to add to watchlist' });
   }
 });
+
+// router.post('/watchlist', async (req, res) => {
+//   try {
+//     const { symbol, companyName } = req.body;
+
+//     if (!symbol) {
+//       return res.status(400).json({ error: 'Symbol is required' });
+//     }
+
+//     const upperSymbol = symbol.toUpperCase();
+
+//     // Check if already in watchlist
+//     const [existing] = await db.execute(
+//       `SELECT id FROM watchlist WHERE user_id = ? AND symbol = ?`,
+//       [req.session.userId, upperSymbol]
+//     );
+
+//     if (existing.length > 0) {
+//       return res.status(400).json({ error: 'Stock already in watchlist' });
+//     }
+
+//     // Fetch real-time price data
+//     const priceData = await getStockPrice(upperSymbol);
+
+//     if (!priceData || priceData.currentPrice === null) {
+//       return res.status(500).json({ error: 'Failed to fetch real-time stock data' });
+//     }
+
+//     const addedDate = new Date().toISOString().split('T')[0];
+
+//     const insertQuery = `
+//       INSERT INTO watchlist (user_id, symbol, company_name, added_date, current_price, change_percent)
+//       VALUES (?, ?, ?, ?, ?, ?)
+//     `;
+
+//     await db.execute(insertQuery, [
+//       req.session.userId,
+//       upperSymbol,
+//       companyName || upperSymbol,
+//       addedDate,
+//       parseFloat(priceData.currentPrice.toFixed(2)),
+//       parseFloat((priceData.changePercent || 0).toFixed(2))
+//     ]);
+
+//     res.status(201).json({
+//       symbol: upperSymbol,
+//       companyName: companyName || upperSymbol,
+//       currentPrice: parseFloat(priceData.currentPrice.toFixed(2)),
+//       changePercent: parseFloat((priceData.changePercent || 0).toFixed(2)),
+//       addedDate
+//     });
+
+//   } catch (error) {
+//     console.error("Error adding to watchlist:", error);
+//     res.status(500).json({ error: 'Failed to add to watchlist' });
+//   }
+// });
 // // Add to watchlist
 // router.post('/watchlist', (req, res) => {
 //   try {

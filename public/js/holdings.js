@@ -59,7 +59,7 @@ document.getElementById('tradeForm')?.addEventListener('submit', async e => {
     const quantity = parseFloat(document.getElementById('tradeQuantity').value);
 
     try {
-        await api.post('/api/portfolio/trade', { type, symbol, quantity });
+        await api.post('/api/trade', { type, symbol, quantity });
         ui.showAlert(`${type} successful`, 'success');
         ui.hideModal('tradeModal');
         await loadHoldings();
@@ -162,7 +162,9 @@ function renderHoldingsTable(holdings) {
                 <td>${holding.quantity}</td>
                 <td>${utils.formatCurrency(holding.buyPrice)}</td>
                 <td>${utils.formatCurrency(holding.currentPrice)}</td>
-                <td class="font-semibold">${utils.formatCurrency(holding.totalValue)}</td>
+                <td class="font-semibold">${utils.formatCurrency(holding.investedAmount)}</td>
+<td class="font-semibold">${utils.formatCurrency(holding.totalValue)}</td>
+
                 <td class="font-semibold ${plClass}">
                     ${pl >= 0 ? '+' : ''}${utils.formatCurrency(pl)}
                 </td>

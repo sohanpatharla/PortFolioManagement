@@ -7,6 +7,11 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const portfolioRoutes = require('./routes/portfolio');
 const userRoutes = require('./routes/user');
+const walletRoutes = require('./routes/walletRoutes');
+const tradeRoutes = require('./routes/tradeRoutes');
+
+
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,6 +37,8 @@ app.use(session({
 app.use('/api/auth', authRoutes);
 app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/wallet', walletRoutes);
+app.use('/api/trade', tradeRoutes);
 
 // Serve HTML files
 app.get('/', (req, res) => {

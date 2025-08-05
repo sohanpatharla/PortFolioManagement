@@ -4,7 +4,7 @@
 CREATE DATABASE IF NOT EXISTS portfolio_db;
 USE portfolio_db;
 
--- Users table
+-- Users tab
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,

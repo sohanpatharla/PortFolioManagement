@@ -322,7 +322,7 @@ router.post('/holdings', async (req, res) => {
 
     //const currentPrice = parsedBuyPrice * (0.9 + Math.random() * 0.2);
     // const currentPrice = await getStockPrice(symbol.toUpperCase());
-     const stockData = await getStockPrice(symbol/toUpperCase());
+     const stockData = await getStockPrice(symbol.toUpperCase());
           const currentPrice = stockData.currentPrice;
     if (currentPrice === null) {
       return res.status(500).json({ error: 'Failed to fetch current stock price' });

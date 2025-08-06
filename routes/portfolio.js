@@ -64,16 +64,24 @@ router.get('/holdings', async (req, res) => {
         try {
           // Fetch current price from API
           const stockData = await getStockPrice(holding.symbol);
-          const currentPrice = stockData.currentPrice;
+          const currentPrice = parseFloat(stockData.currentPrice);
           
           if (currentPrice !== null) {
             // Calculate updated values
-            const totalValue = holding.quantity * currentPrice;
-            const profitLoss = totalValue - holding.invested_amount;
+            const totalValue = parseFloat(holding.quantity) * parseFloat(currentPrice);
+            const profitLoss = parseFloat(totalValue) - parseFloat(holding.invested_amount);
 const profitLossPercentage = holding.invested_amount !== 0
-  ? (profitLoss / holding.invested_amount) * 100
+  ? (parseFloat(profitLoss / holding.invested_amount) * 100)
   : 0;
 
+  console.log('Debug values:', {
+  symbol: holding.symbol,
+  quantity: holding.quantity,
+  investedAmount: holding.invested_amount,
+  currentPrice: currentPrice,
+  totalValue: totalValue,
+  profitLoss: profitLoss
+});
 
             // Update database with new values
             await db.query(
@@ -96,7 +104,7 @@ const profitLossPercentage = holding.invested_amount !== 0
             return holding;
           }
         } catch (error) {
-          console.error(`Error processing holding ${holding.symbol}:`, error.message);
+          console.error(`Error processing holding ${holding.symbol}:`, error);
           return holding; // Return original holding if processing fails
         }
       })

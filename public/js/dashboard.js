@@ -116,19 +116,22 @@ function updatePortfolioSummary(summary) {
     }
 }
 
-// Initialize charts
-function initializeCharts() {
-    initPerformanceChart();
+// // Initialize charts
+// function initializeCharts() {
+//     initPerformanceChart();
+//     initAllocationChart();
+// }
+async function initializeCharts() {
+    await initPerformanceChart();
     initAllocationChart();
 }
 
 // Initialize performance chart
-function initPerformanceChart() {
+async function initPerformanceChart() {
     const ctx = document.getElementById('performanceChart');
     if (!ctx) return;
 
-    // Generate dummy performance data
-    const performanceData = generatePerformanceData();
+    const performanceData = await generatePerformanceData();
 
     performanceChart = new Chart(ctx, {
         type: 'line',
@@ -240,27 +243,21 @@ function initAllocationChart() {
     });
 }
 
-// Generate dummy performance data
-function generatePerformanceData() {
-    const labels = [];
-    const values = [];
-    const baseValue = 200000;
-    let currentValue = baseValue;
-
-    // Generate data for the last 30 days
-    for (let i = 29; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-        
-        // Random walk with slight upward trend
-        const change = (Math.random() - 0.48) * 0.02;
-        currentValue *= (1 + change);
-        values.push(Math.round(currentValue));
+async function generatePerformanceData() {
+    try {
+        const response = await api.get('/api/portfolio/performance');
+        const labels = response.map(d => {
+            const date = new Date(d.date);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        });
+        const values = response.map(d => Math.round(d.value));
+        return { labels, values };
+    } catch (err) {
+        console.error('Failed to fetch performance data:', err);
+        return { labels: [], values: [] };
     }
-
-    return { labels, values };
 }
+
 
 // Generate allocation data
 function generateAllocationData() {

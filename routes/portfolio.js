@@ -74,14 +74,14 @@ const profitLossPercentage = holding.invested_amount !== 0
   ? (parseFloat(profitLoss / holding.invested_amount) * 100)
   : 0;
 
-  console.log('Debug values:', {
-  symbol: holding.symbol,
-  quantity: holding.quantity,
-  investedAmount: holding.invested_amount,
-  currentPrice: currentPrice,
-  totalValue: totalValue,
-  profitLoss: profitLoss
-});
+//   console.log('Debug values:', {
+//   symbol: holding.symbol,
+//   quantity: holding.quantity,
+//   investedAmount: holding.invested_amount,
+//   currentPrice: currentPrice,
+//   totalValue: totalValue,
+//   profitLoss: profitLoss
+// });
 
             // Update database with new values
             await db.query(
@@ -104,7 +104,7 @@ const profitLossPercentage = holding.invested_amount !== 0
             return holding;
           }
         } catch (error) {
-          console.error(`Error processing holding ${holding.symbol}:`, error);
+          //console.error(`Error processing holding ${holding.symbol}:`, error);
           return holding; // Return original holding if processing fails
         }
       })
@@ -385,6 +385,45 @@ router.post('/watchlist', async (req, res) => {
     res.status(500).json({ error: 'Failed to add to watchlist' });
   }
 });
+router.get('/performance', async (req, res) => {
+  const userId = req.session.userId;
+
+  const [rows] = await db.query(`
+      SELECT 
+          purchase_date,
+          SUM(quantity * current_price) AS value
+      FROM holdings
+      WHERE user_id = ?
+      GROUP BY purchase_date
+      ORDER BY purchase_date
+  `, [userId]);
+
+  // Fill missing dates and accumulate values (simulate portfolio timeline)
+  const performance = [];
+  let currentDate = new Date(rows[0]?.purchase_date || new Date());
+  let today = new Date();
+  let index = 0;
+  let lastValue = 0;
+
+  while (currentDate <= today) {
+      const dateStr = currentDate.toISOString().split('T')[0];
+
+      if (index < rows.length && rows[index].purchase_date.toISOString().split('T')[0] === dateStr) {
+          lastValue += parseFloat(rows[index].value);
+          index++;
+      }
+
+      performance.push({
+          date: dateStr,
+          value: lastValue
+      });
+
+      currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  res.json(performance);
+});
+
 
 
 // Remove from watchlist

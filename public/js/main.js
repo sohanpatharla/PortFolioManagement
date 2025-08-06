@@ -81,11 +81,16 @@ const utils = {
 const api = {
     // Base API call function
     call: async (endpoint, options = {}) => {
+        const token = localStorage.getItem('JWT_TOKEN');
         const defaultOptions = {
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                // 'Authorization': `Bearer ${localStorage.getItem('JWT_TOKEN') || ''}`
             }
         };
+        if (token) {
+            defaultOptions.headers['Authorization'] = `Bearer ${token}`;
+        }
 
         const config = { ...defaultOptions, ...options };
         
@@ -377,7 +382,8 @@ document.addEventListener('DOMContentLoaded', function() {
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
             if (confirm('Are you sure you want to logout?')) {
-                auth.logout();
+                localStorage.removeItem('JWT_TOKEN');
+                window.location.href = '/';
             }
         });
     }

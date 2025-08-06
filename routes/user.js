@@ -1,6 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const { requireAuth } = require('../middleware/auth');
+const { requireJWTAuth } = require('../middleware/auth');
 const router = express.Router();
 
 // Static dummy user data (will be replaced with database later)
@@ -42,7 +42,7 @@ const dummyUsers = [
 ];
 
 // Apply authentication middleware to all user routes
-router.use(requireAuth);
+router.use(requireJWTAuth);
 
 // Get user profile
 router.get('/profile', (req, res) => {

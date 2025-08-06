@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireAuth } = require('../middleware/auth');
+const { requireJWTAuth } = require('../middleware/auth');
 const router = express.Router();
 const db = require('../config/database');
 const { getStockPrice } = require('../utils/finnhub');

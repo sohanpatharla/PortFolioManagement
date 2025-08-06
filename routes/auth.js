@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const db = require('../config/database');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 
 // Static dummy data for now (replace with database later)
 const dummyUsers = [
@@ -118,13 +119,21 @@ router.post('/login', async (req, res) => {
     }
 
     // Create session
-    req.session.userId = user.id;
-    req.session.userEmail = user.email;
-    req.session.firstName = user.firstName;
-    req.session.lastName = user.lastName;
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
 
-    res.json({ 
+    // Send token and user info in response
+    res.json({
       message: 'Login successful',
+      token, // <-- Client should store this
       user: {
         id: user.id,
         email: user.email,
@@ -141,29 +150,50 @@ router.post('/login', async (req, res) => {
 
 // Logout user
 router.post('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Could not log out' });
-    }
     res.json({ message: 'Logout successful' });
   });
-});
 
 // Check authentication status
 router.get('/status', (req, res) => {
-  if (req.session && req.session.userId) {
+  // if (req.session && req.session.userId) {
+  //   res.json({ 
+  //     authenticated: true,
+  //     user: {
+  //       id: req.session.userId,
+  //       email: req.session.userEmail,
+  //       firstName: req.session.firstName,
+  //       lastName: req.session.lastName
+  //     }
+  //   });
+  // } else {
+  //   res.json({ authenticated: false });
+  // }
+
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.json({ authenticated: false });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // user info (e.g., id, email) from token
     res.json({ 
       authenticated: true,
       user: {
-        id: req.session.userId,
-        email: req.session.userEmail,
-        firstName: req.session.firstName,
-        lastName: req.session.lastName
+        id: req.user.id,
+        email: req.user.email,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName
       }
     });
-  } else {
-    res.json({ authenticated: false });
+  } catch (err) {
+    return res.json({ authenticated: false });
   }
+  
 });
+
 
 module.exports = router;

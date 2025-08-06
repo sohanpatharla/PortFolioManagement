@@ -60,7 +60,13 @@ function initLoginPage() {
                 email,
                 password
             });
-
+            console.log('Login response:', response);
+            if (!response || !response.token) {
+                throw new Error('Invalid response from server');
+            }
+            // store JWT token in localStorage
+            localStorage.setItem('JWT_TOKEN', response.token);
+            
             ui.showAlert('Login successful! Redirecting...', 'success');
             
             // Redirect to dashboard

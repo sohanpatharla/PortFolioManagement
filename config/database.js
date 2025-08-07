@@ -44,6 +44,8 @@ const testConnection = async () => {
 };
 
 // Initialize connection test
-testConnection();
+if (process.env.NODE_ENV !== 'test') {
+  testConnection();
+}
 
 module.exports = promisePool;

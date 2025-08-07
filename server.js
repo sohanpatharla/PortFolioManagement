@@ -96,3 +96,4 @@ app.listen(PORT, () => {
   console.log('- Signup: http://localhost:' + PORT + '/signup');
   console.log('- Dashboard: http://localhost:' + PORT + '/dashboard');
 });
+

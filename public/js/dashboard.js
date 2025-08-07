@@ -462,6 +462,7 @@ async function loadTopPerformers() {
 }
 
 // Load market summary
+//add this to fetch in real time
 function loadMarketSummary() {
     // Dummy market data
     const marketData = [

@@ -425,22 +425,30 @@ router.get('/performance', async (req, res) => {
 });
 
 
-
-// Remove from watchlist
-router.delete('/watchlist/:id', (req, res) => {
+router.delete('/watchlist/:id', async (req, res) => {
   try {
     const itemId = parseInt(req.params.id);
-    const itemIndex = dummyWatchlist.findIndex(item => item.id === itemId && item.userId === req.session.userId);
-    
-    if (itemIndex === -1) {
-      return res.status(404).json({ error: 'Watchlist item not found' });
+    const userId = req.session.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    dummyWatchlist.splice(itemIndex, 1);
+    const [result] = await db.execute(
+      'DELETE FROM watchlist WHERE id = ? AND user_id = ?',
+      [itemId, userId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Watchlist item not found or not authorized to delete' });
+    }
+
     res.json({ message: 'Item removed from watchlist' });
   } catch (error) {
+    console.error('Error deleting watchlist item:', error);
     res.status(500).json({ error: 'Failed to remove from watchlist' });
   }
 });
+
 
 module.exports = router;

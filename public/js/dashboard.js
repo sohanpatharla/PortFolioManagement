@@ -243,20 +243,57 @@ function initAllocationChart() {
     });
 }
 
-async function generatePerformanceData() {
+// async function generatePerformanceData() {
+//     try {
+//         const response = await api.get('/api/portfolio/performance');
+//         const labels = response.map(d => {
+//             const date = new Date(d.date);
+//             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+//         });
+//         const values = response.map(d => Math.round(d.value));
+//         return { labels, values };
+//     } catch (err) {
+//         console.error('Failed to fetch performance data:', err);
+//         return { labels: [], values: [] };
+//     }
+// }
+async function generatePerformanceData(period = '1D') {
     try {
         const response = await api.get('/api/portfolio/performance');
-        const labels = response.map(d => {
+        let data = response;
+
+        const daysMap = {
+            '1D': 1,
+            '1W': 7,
+            '1M': 30,
+            '3M': 90,
+            '1Y': 365
+        };
+
+        if (period !== '1D') {
+            const days = daysMap[period];
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - days);
+            data = response.filter(d => new Date(d.date) >= cutoffDate);
+        } else {
+            // Show only today's data
+            const todayStr = new Date().toISOString().split('T')[0];
+            data = response.filter(d => d.date === todayStr);
+        }
+
+        const labels = data.map(d => {
             const date = new Date(d.date);
             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         });
-        const values = response.map(d => Math.round(d.value));
+        const values = data.map(d => Math.round(d.value));
+
         return { labels, values };
     } catch (err) {
         console.error('Failed to fetch performance data:', err);
         return { labels: [], values: [] };
     }
 }
+
 
 
 // Generate allocation data
@@ -385,13 +422,20 @@ async function handleAddStock(e) {
 }
 
 // Update performance chart based on period
-function updatePerformanceChart(period) {
-    const performanceData = generatePerformanceData(period);
+// function updatePerformanceChart(period) {
+//     const performanceData = generatePerformanceData(period);
     
+//     performanceChart.data.labels = performanceData.labels;
+//     performanceChart.data.datasets[0].data = performanceData.values;
+//     performanceChart.update();
+// }
+async function updatePerformanceChart(period) {
+    const performanceData = await generatePerformanceData(period);
     performanceChart.data.labels = performanceData.labels;
     performanceChart.data.datasets[0].data = performanceData.values;
     performanceChart.update();
 }
+
 
 // Load recent activity
 async function loadRecentActivity() {

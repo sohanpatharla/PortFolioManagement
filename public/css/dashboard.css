@@ -483,6 +483,79 @@
       height: 300px;
     }
   }
+  .time-filters button {
+  background: #e5e7eb;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.time-filters button:hover {
+  background: #d1d5db;
+}
+
+.time-filters button.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+  .enhanced-modal {
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.5rem;
+}
+
+.chart-section {
+  margin-bottom: 1.5rem;
+}
+
+.transactions-heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.3rem;
+}
+
+.transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.transaction-item {
+  background-color: #f9f9f9;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #4b5563;
+  border-radius: 4px;
+}
+
+.transaction-item strong {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.transaction-item.buy {
+  border-color: #22c55e;
+  background-color: #ecfdf5;
+}
+
+.transaction-item.sell {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
   
   @media (max-width: 480px) {
     .dashboard-title {

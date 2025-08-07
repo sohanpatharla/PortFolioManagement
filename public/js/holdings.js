@@ -84,6 +84,10 @@ async function loadUserInfo() {
         console.error('Error loading user info:', error);
     }
 }
+async function fetchStockHistory(symbol, range = '1day') {
+  const res = await api.get(`/api/stocks/history/${symbol}?range=${range}`);
+  return res;
+}
 
 // Load holdings data
 async function loadHoldings() {
@@ -97,7 +101,7 @@ async function loadHoldings() {
         //     holding.profitLoss = (holding.currentPrice - holding.buyPrice) * holding.quantity;
         //     holding.profitLossPercentage = ((holding.currentPrice - holding.buyPrice) / holding.buyPrice) * 100;
         // });
-        console.log(holdings);
+        //console.log(holdings);
         
         holdingsData = holdings;
         updateSummaryCards(summary);
@@ -131,7 +135,7 @@ function updateSummaryCards(summary) {
 // Render holdings table
 function renderHoldingsTable(holdings) {
     const tbody = document.getElementById('holdingsTableBody');
-    console.log(holdings);
+    //console.log(holdings);
     
     if (!tbody) return;
 
@@ -156,7 +160,7 @@ function renderHoldingsTable(holdings) {
         const plClass = pl >= 0 ? 'text-success' : 'text-danger';
         
         return `
-            <tr>
+            <tr onclick="openStockDetails('${holding.symbol}')">
                 <td class="font-semibold">${holding.symbol}</td>
                 <td>${holding.companyName}</td>
                 <td>${holding.quantity}</td>
@@ -427,5 +431,160 @@ async function exportHoldings() {
     } catch (error) {
         console.error('Export error:', error);
         ui.showAlert('Failed to export portfolio', 'error');
+    }
+}
+let quantityChartInstance;
+
+function renderQuantityChart(transactions) {
+    console.log('Rendering quantity chart with transactions:', transactions);
+    
+  const ctx = document.getElementById('stockQuantityChart');
+  if (quantityChartInstance) quantityChartInstance.destroy();
+
+  const dates = {};
+  let cumulativeQty = 0;
+
+  transactions.forEach(t => {
+    const date = new Date(t.date).toLocaleDateString();
+    const qty = parseFloat(t.quantity);
+    cumulativeQty += t.type === 'BUY' ? qty : -qty;
+
+    if (!dates[date]) dates[date] = { buy: 0, sell: 0, cumulative: cumulativeQty };
+    if (t.type === 'BUY') dates[date].buy += qty;
+    if (t.type === 'SELL') dates[date].sell += qty;
+  });
+
+  const labels = Object.keys(dates);
+  const buyData = labels.map(d => dates[d].buy);
+  const sellData = labels.map(d => dates[d].sell);
+  const cumulativeData = labels.map(d => dates[d].cumulative);
+
+  quantityChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'BUY',
+          data: buyData,
+          backgroundColor: 'rgba(34,197,94,0.6)'
+        },
+        {
+          label: 'SELL',
+          data: sellData,
+          backgroundColor: 'rgba(239,68,68,0.6)'
+        },
+        {
+          label: 'Cumulative Quantity',
+          data: cumulativeData,
+          type: 'line',
+          borderColor: '#3b82f6',
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { stacked: true },
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  ctx.classList.remove('loading');
+}
+
+let stockChartInstance;
+
+function renderStockHistoryChart(data) {
+  const ctx = document.getElementById('stockHistoryChart');
+  if (stockChartInstance) stockChartInstance.destroy();
+
+  const labels = data.map(d => d.datetime);
+  const prices = data.map(d => parseFloat(d.close));
+
+  stockChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Price',
+        data: prices,
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59,130,246,0.1)',
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { maxTicksLimit: 10 } },
+        y: { beginAtZero: false }
+      }
+    }
+  });
+
+  ctx.classList.remove('loading');
+}
+
+function renderTransactionList(transactions) {
+    const container = document.getElementById('stockTransactionList');
+
+    if (transactions.length === 0) {
+        container.innerHTML = '<p>No transactions found.</p>';
+        return;
+    }
+
+    container.innerHTML = transactions.map(t => `
+        <div class="transaction-item">
+            <strong>${t.type}</strong> • ${t.quantity} shares at ₹${t.price} on ${new Date(t.date).toLocaleDateString()}
+        </div>
+    `).join('');
+}
+
+
+async function openStockDetails(symbol) {
+    try {
+        // Show modal
+        ui.showModal('stockDetailModal');
+
+        // Show loading states
+        document.getElementById('stockDetailTitle').textContent = symbol;
+        document.getElementById('stockHistoryChart').classList.add('loading');
+        document.getElementById('stockTransactionList').innerHTML = 'Loading...';
+
+       const initialRange = '1day';
+const history = await fetchStockHistory(symbol, initialRange);
+renderStockHistoryChart(history);
+
+// Setup range filters
+document.querySelectorAll('.time-btn').forEach(btn => {
+  btn.classList.remove('active');
+  if (btn.dataset.range === initialRange) btn.classList.add('active');
+
+  btn.onclick = async () => {
+    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const newHistory = await fetchStockHistory(symbol, btn.dataset.range);
+    renderStockHistoryChart(newHistory);
+  };
+});
+
+        // 2. Fetch user’s transactions for this stock
+        const transactions = await api.get(`/api/portfolio/transactions?symbol=${symbol}`);
+
+        // 3. Render chart
+        //renderStockHistoryChart(history);
+
+        // 4. Render transaction list
+        renderTransactionList(transactions);
+        renderQuantityChart(transactions);
+
+    } catch (err) {
+        ui.showAlert('Failed to load stock details', 'error');
     }
 }

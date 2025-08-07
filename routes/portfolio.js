@@ -277,14 +277,45 @@ router.delete('/holdings/:id', async (req, res) => {
 });
 
 
-// Get all transactions for the logged-in user
+// // Get all transactions for the logged-in user
+// router.get('/transactions', async (req, res) => {
+//   try {
+//     const [transactions] = await db.execute(
+//       `SELECT id,user_id as userId,symbol,transaction_type as type,quantity,price,total_amount as total,transaction_date as date FROM transactions WHERE user_id = ? ORDER BY transaction_date DESC`,
+//       [req.session.userId]
+//     );
+//     //console.log(transactions);
+//     res.json(transactions);
+//   } catch (error) {
+//     console.error("Error fetching transactions:", error);
+//     res.status(500).json({ error: 'Failed to fetch transactions' });
+//   }
+// });
+// Get all or filtered transactions for the logged-in user
 router.get('/transactions', async (req, res) => {
+  const userId = req.session.userId;
+  const { symbol } = req.query;
+
   try {
-    const [transactions] = await db.execute(
-      `SELECT id,user_id as userId,symbol,transaction_type as type,quantity,price,total_amount as total,transaction_date as date FROM transactions WHERE user_id = ? ORDER BY transaction_date DESC`,
-      [req.session.userId]
-    );
-    //console.log(transactions);
+    let query = `
+      SELECT 
+        id, user_id AS userId, symbol,
+        transaction_type AS type, quantity,
+        price, total_amount AS total,
+        transaction_date AS date
+      FROM transactions
+      WHERE user_id = ?
+    `;
+    const params = [userId];
+
+    if (symbol) {
+      query += ' AND symbol = ?';
+      params.push(symbol.toUpperCase());
+    }
+
+    query += ' ORDER BY transaction_date DESC';
+
+    const [transactions] = await db.execute(query, params);
     res.json(transactions);
   } catch (error) {
     console.error("Error fetching transactions:", error);

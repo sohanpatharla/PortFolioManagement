@@ -9,6 +9,7 @@ const portfolioRoutes = require('./routes/portfolio');
 const userRoutes = require('./routes/user');
 const walletRoutes = require('./routes/walletRoutes');
 const tradeRoutes = require('./routes/tradeRoutes');
+const stocksRoutes = require('./routes/stocks');
 
 
 
@@ -39,6 +40,7 @@ app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/trade', tradeRoutes);
+app.use('/api/stocks', stocksRoutes);
 
 // Serve HTML files
 app.get('/', (req, res) => {

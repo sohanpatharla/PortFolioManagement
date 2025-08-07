@@ -203,6 +203,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/js/main.js"></script>
     <script src="/js/holdings.js"></script>
     <!-- Wallet Modal -->
@@ -252,6 +253,31 @@
       </form>
     </div>
   </div>
+  <div id="stockDetailModal" class="modal hidden">
+    <div class="modal-content enhanced-modal">
+       <div class="chart-header flex items-center justify-between mb-2">
+  <h2 id="stockDetailTitle" class="modal-title">Stock Details</h2>
+  <div class="time-filters space-x-2">
+    <button class="time-btn active" data-range="1day">1D</button>
+    <button class="time-btn" data-range="1week">1W</button>
+    <button class="time-btn" data-range="1month">1M</button>
+  </div>
+</div>
+
+<div class="chart-section">
+  <canvas id="stockHistoryChart" height="250"></canvas>
+  <canvas id="stockQuantityChart" height="180" class="mt-4"></canvas>
+</div>
+
+
+        <h3 class="transactions-heading">Transaction History</h3>
+    <div id="stockTransactionList" class="transaction-list"></div>
+
+    <button class="btn btn-secondary mt-4" onclick="ui.hideModal('stockDetailModal')">Close</button>
+  </div>
+</div>
+
+
   
 </body>
 </html>

@@ -1,6 +1,9 @@
 // Transactions page JavaScript
 
 let transactionsData = [];
+let currentPage = 1;
+const rowsPerPage = 10;
+
 
 // Initialize transactions page
 document.addEventListener('DOMContentLoaded', async function() {
@@ -76,6 +79,13 @@ function updateSummaryCards(transactions) {
     document.getElementById('totalVolume').textContent = utils.formatCurrency(totalVolume);
     document.getElementById('totalFees').textContent = utils.formatCurrency(totalFees);
 }
+function updatePaginationControls(totalRows) {
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+    document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+    
+    document.getElementById('prevPage').disabled = currentPage === 1;
+    document.getElementById('nextPage').disabled = currentPage === totalPages;
+}
 
 // Render transactions table
 function renderTransactionsTable(transactions) {
@@ -93,10 +103,16 @@ function renderTransactionsTable(transactions) {
                 </td>
             </tr>
         `;
+        document.getElementById('pagination').style.display = 'none';
         return;
     }
 
-    tbody.innerHTML = transactions.map(transaction => {
+    // Pagination logic
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const paginatedTransactions = transactions.slice(start, end);
+
+    tbody.innerHTML = paginatedTransactions.map(transaction => {
         const isBuy = transaction.type === 'BUY';
         const typeClass = isBuy ? 'text-success' : 'text-danger';
         const typeIcon = isBuy ? '📈' : '📉';
@@ -107,9 +123,7 @@ function renderTransactionsTable(transactions) {
         return `
             <tr>
                 <td>${utils.formatDate(transaction.date)}</td>
-                <td class="${typeClass} font-semibold">
-                    ${typeIcon} ${transaction.type}
-                </td>
+                <td class="${typeClass} font-semibold">${typeIcon} ${transaction.type}</td>
                 <td class="font-semibold">${transaction.symbol}</td>
                 <td>${transaction.quantity}</td>
                 <td>${utils.formatCurrency(transaction.price)}</td>
@@ -121,10 +135,29 @@ function renderTransactionsTable(transactions) {
             </tr>
         `;
     }).join('');
+
+    updatePaginationControls(transactions.length);
 }
 
 // Initialize event listeners
 function initializeEventListeners() {
+
+
+    // Pagination buttons
+document.getElementById('prevPage').addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        renderTransactionsTable(transactionsData);
+    }
+});
+document.getElementById('nextPage').addEventListener('click', () => {
+    const totalPages = Math.ceil(transactionsData.length / rowsPerPage);
+    if (currentPage < totalPages) {
+        currentPage++;
+        renderTransactionsTable(transactionsData);
+    }
+});
+
     // Refresh transactions
     const refreshBtn = document.getElementById('refreshTransactions');
     if (refreshBtn) {

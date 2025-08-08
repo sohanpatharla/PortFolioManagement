@@ -13,7 +13,7 @@
     <nav class="navbar">
         <div class="container-fluid">
             <div class="navbar-content">
-                <a href="/dashboard" class="navbar-brand">📊 Investiv</a>
+                <a href="/dashboard" class="navbar-brand">📊 Portfolio</a>
                 <ul class="navbar-nav">
                     <li><span id="userGreeting" class="nav-link">Welcome!</span></li>
                     <li><button id="themeToggle" class="btn btn-secondary btn-sm">🌙</button></li>
@@ -125,6 +125,12 @@
             <div class="card-body p-0">
                 <div class="table-container">
                     <table class="table">
+                        <div id="pagination" class="pagination-controls">
+    <button id="prevPage" class="btn btn-outline btn-sm">Prev</button>
+    <span id="pageInfo"></span>
+    <button id="nextPage" class="btn btn-outline btn-sm">Next</button>
+</div>
+
                         <thead>
                             <tr>
                                 <th>Date</th>
